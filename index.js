@@ -27,17 +27,34 @@ async function run() {
         await client.connect();
         // ...............................................................................................
 
-        const cartCollection = client.db('ecommerceDB').collection('products');
+        const productCollection = client.db('ecommerceDB').collection('products');
+        const cartCollection = client.db('ecommerceDB').collection('carts');
 
         app.get('/products', async (req, res) => {
-            const result = await cartCollection.find().toArray();
+            const result = await productCollection.find().toArray();
             res.send(result);
         })
 
         app.get('/product/:id', async (req, res) => {
             const id = req.params.id;
             const query = {_id: new ObjectId(id)}
-            const result = await cartCollection.findOne(query);
+            const result = await productCollection.findOne(query);
+            res.send(result);
+        })
+
+
+        app.post('/carts', async(req, res)=>{
+            const post = req.body;
+            const result = await cartCollection.insertOne(post);
+            res.send(result);
+        })
+
+        app.get('/carts', async(req,res)=>{
+            let query = {};
+            if(req.query?.email){
+                query = {email: req.query.email}
+            } 
+            const result = await cartCollection.find(query).toArray();
             res.send(result);
         })
 

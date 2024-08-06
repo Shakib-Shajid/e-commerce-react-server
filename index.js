@@ -42,19 +42,30 @@ async function run() {
             res.send(result);
         })
 
-
+        
+        // send product in carts
         app.post('/carts', async (req, res) => {
             const post = req.body;
             const result = await cartCollection.insertOne(post);
             res.send(result);
         })
 
+
+        // show by email in cart
         app.get('/carts', async (req, res) => {
             let query = {};
             if (req.query?.email) {
                 query = { email: req.query.email }
             }
             const result = await cartCollection.find(query).toArray();
+            res.send(result);
+        })
+
+        // delete product
+        app.delete('/carts/:id', async(req,res)=>{
+            const id = req.params.id;
+            const query = {_id: new ObjectId(id)};
+            const result = await cartCollection.deleteOne(query);
             res.send(result);
         })
 
